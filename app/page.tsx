@@ -10,7 +10,7 @@ export default function Home() {
 <section className="relative h-screen flex items-center justify-center w-full">
   <div className="absolute inset-0 z-0">
     <Image
-      src="/placeholder.svg?height=1080&width=1920"
+        src="/assets/hero_section.avif" // Ensure the image is inside the "public/assets" directory
       alt="Luxury Hotel"
       fill
       priority
@@ -49,12 +49,12 @@ export default function Home() {
               </Button>
             </div>
             <div className="relative h-[400px] md:h-[500px]">
-              <Image
-                src="/placeholder.svg?height=500&width=600"
-                alt="Hotel Interior"
-                fill
-                className="object-cover rounded-lg"
-              />
+            <Image
+  src="/assets/welcome_section.jpg" // Ensure the image is inside the "public/assets" directory
+  alt="Hotel Interior"
+  fill
+  className="object-cover rounded-lg"
+/>
             </div>
           </div>
         </div>
