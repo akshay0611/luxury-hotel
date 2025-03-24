@@ -21,11 +21,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
+      setIsScrolled(window.scrollY > 10)
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -35,52 +31,81 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent",
+        "fixed top-0 w-full z-50 transition-all duration-500 ease-in-out",
+        isScrolled
+          ? "bg-white/95 backdrop-blur-lg shadow-md"
+          : "bg-gradient-to-b from-black/70 to-transparent",
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex h-16 md:h-20 items-center justify-between">
-          <Link href="/" className="text-2xl font-bold tracking-tight text-foreground">
+          <Link
+            href="/"
+            className={cn(
+              "text-2xl md:text-3xl font-bold tracking-tight transition-colors duration-300",
+              isScrolled ? "text-gray-900" : "text-white",
+              "hover:text-primary"
+            )}
+          >
             LUXURY<span className="text-primary">HOTEL</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium transition-colors hover:text-primary"
+                className={cn(
+                  "text-base font-medium transition-all duration-300 ease-in-out",
+                  isScrolled ? "text-gray-700 hover:text-primary" : "text-white hover:text-primary/90",
+                  "relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:bottom-[-4px] after:left-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                )}
               >
                 {link.name}
               </Link>
             ))}
-            <Button size="lg">Book Now</Button>
+            <Button
+              size="lg"
+              className="bg-primary text-white font-semibold px-6 py-2 rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md"
+            >
+              Book Now
+            </Button>
           </nav>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button
+            className="md:hidden p-2 rounded-full hover:bg-gray-200/50 transition-colors duration-200"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? (
+              <X className={cn("h-6 w-6", isScrolled ? "text-gray-900" : "text-white")} />
+            ) : (
+              <Menu className={cn("h-6 w-6", isScrolled ? "text-gray-900" : "text-white")} />
+            )}
           </button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden bg-background">
-          <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+        <div className="md:hidden bg-white shadow-lg animate-slide-down">
+          <div className="container mx-auto px-4 py-6 flex flex-col space-y-4">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-base font-medium py-2 transition-colors hover:text-primary"
+                className="text-base font-medium py-3 text-gray-700 hover:text-primary transition-colors duration-300 border-b border-gray-100 last:border-b-0"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
-            <Button className="w-full" size="lg">
+            <Button
+              className="w-full bg-primary text-white font-semibold px-6 py-3 rounded-full hover:bg-primary/90 transition-all duration-300"
+              size="lg"
+            >
               Book Now
             </Button>
           </div>
@@ -89,4 +114,3 @@ export default function Navbar() {
     </header>
   )
 }
-
