@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ const navLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const pathname = usePathname() // Get current path
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,9 +59,10 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "text-base font-medium transition-all duration-300 ease-in-out",
+                  "text-base font-medium transition-all duration-300 ease-in-out relative",
                   isScrolled ? "text-gray-700 hover:text-primary" : "text-white hover:text-primary/90",
-                  "relative after:content-[''] after:absolute after:w-0 after:h-0.5 after:bottom-[-4px] after:left-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                  pathname === link.href ? "text-primary font-semibold after:w-full" : "after:w-0",
+                  "after:content-[''] after:absolute after:h-0.5 after:bottom-[-4px] after:left-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
                 )}
               >
                 {link.name}
@@ -96,7 +99,10 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-base font-medium py-3 text-gray-700 hover:text-primary transition-colors duration-300 border-b border-gray-100 last:border-b-0"
+                className={cn(
+                  "text-base font-medium py-3 transition-colors duration-300 border-b border-gray-100 last:border-b-0",
+                  pathname === link.href ? "text-primary font-semibold" : "text-gray-700 hover:text-primary"
+                )}
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
