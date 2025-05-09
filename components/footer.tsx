@@ -1,7 +1,16 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
+import { useToast } from '@/hooks/use-toast';
+import { submitNewsletterForm } from '@/utils/supabase/newsletter';
+import { cn } from "@/lib/utils"
 
 export default function Footer() {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast(); 
+
   return (
     <footer className="bg-gray-900 text-white py-16 md:py-20">
       <div className="container mx-auto px-4 md:px-6">
@@ -85,27 +94,57 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="animate-fade-in-up" style={{ animationDelay: "300ms" }}>
-            <h4 className="text-xl font-semibold mb-6 border-b border-gray-700 pb-3 text-gray-100">Newsletter</h4>
-            <p className="text-gray-300 text-base leading-relaxed mb-6">
-              Subscribe for exclusive deals and updates.
-            </p>
-            <form className="space-y-4">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="w-full px-5 py-3 rounded-full bg-gray-800 border border-gray-700 text-white text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
-                required
-              />
-              <button
-                type="submit"
-                className="w-full bg-primary text-white font-semibold py-3 px-6 rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
+     {/* Newsletter */}
+     <div className="animate-fade-in-up" style={{ animationDelay: "300ms" }}>
+  <h4 className="text-xl font-semibold mb-6 border-b border-gray-700 pb-3 text-gray-100">Newsletter</h4>
+  <p className="text-gray-300 text-base leading-relaxed mb-6">
+    Subscribe for exclusive deals and updates.
+  </p>
+  <form
+  className="space-y-4"
+  onSubmit={async (e) => {
+    e.preventDefault();
+    const emailInput = e.currentTarget.querySelector('input[type="email"]') as HTMLInputElement;
+    const email = emailInput.value;
+    setIsLoading(true);
+
+    try {
+      await submitNewsletterForm({ email });
+      toast({
+        title: 'Subscription Successful',
+        description: 'You have successfully subscribed to the newsletter!',
+        variant: 'default',
+      });
+      emailInput.value = ''; // Clear the input
+    } catch (error) {
+      toast({
+        title: 'Subscription Failed',
+        description: error instanceof Error ? error.message : 'Failed to subscribe. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }}
+>
+    <input
+      type="email"
+      placeholder="Your email address"
+      className="w-full px-5 py-3 rounded-full bg-gray-800 border border-gray-700 text-white text-base placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
+      required
+    />
+    <button
+      type="submit"
+      disabled={isLoading}
+      className={cn(
+        'w-full bg-primary text-white font-semibold py-3 px-6 rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md',
+        isLoading && 'opacity-50 cursor-not-allowed'
+      )}
+    >
+      {isLoading ? 'Subscribing...' : 'Subscribe'}
+    </button>
+  </form>
+</div>
         </div>
 
         {/* Copyright */}

@@ -7,6 +7,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/toaster"; // Added Toaster import
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -41,6 +42,7 @@ export default function RootLayout({
           </div>
         </main>
         <Footer />
+        <Toaster /> {/* Added Toaster component */}
       </body>
     </html>
   );
