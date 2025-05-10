@@ -117,3 +117,10 @@
     transform: translateY(0);
   }
 }
+
+/* Force months to be side by side in DayPicker */
+.rdp-months {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 2rem; /* Optional: adds space between months */
+}
