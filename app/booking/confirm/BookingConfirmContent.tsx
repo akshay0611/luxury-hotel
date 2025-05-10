@@ -55,9 +55,34 @@ export default function BookingConfirmContent() {
     fetchRoom()
   }, [roomId, toast])
 
+  const checkAvailability = async () => {
+    if (!room || !date?.from || !date?.to) return false
+    const res = await fetch("/api/availability", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        room_id: room.id,
+        date_from: date.from.toLocaleDateString("en-CA"),
+        date_to: date.to.toLocaleDateString("en-CA"),
+      }),
+    })
+    const result = await res.json()
+    return result.available
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!room || !date?.from || !date?.to) return;
+    e.preventDefault()
+    if (!room || !date?.from || !date?.to) return
+
+    const isAvailable = await checkAvailability()
+    if (!isAvailable) {
+      toast({
+        title: "Room Unavailable",
+        description: "This room is already booked for the selected dates. Please choose different dates.",
+        variant: "destructive",
+      })
+      return
+    }
 
     const res = await fetch("/api/bookings", {
       method: "POST",
@@ -71,23 +96,23 @@ export default function BookingConfirmContent() {
         date_from: date.from.toLocaleDateString("en-CA"),
         date_to: date.to.toLocaleDateString("en-CA"),
       }),
-    });
+    })
 
-    const result = await res.json();
+    const result = await res.json()
     if (res.ok) {
-      setSubmitted(true);
+      setSubmitted(true)
       toast({
         title: "Booking Confirmed!",
         description: "Thank you for your reservation. We look forward to your stay!",
         variant: "default",
-      });
-      setTimeout(() => router.push("/"), 3000);
+      })
+      setTimeout(() => router.push("/"), 3000)
     } else {
       toast({
         title: "Booking Failed",
         description: result.error || "Something went wrong.",
         variant: "destructive",
-      });
+      })
     }
   }
 
@@ -213,4 +238,4 @@ export default function BookingConfirmContent() {
       </div>
     </div>
   )
-} 
+}
