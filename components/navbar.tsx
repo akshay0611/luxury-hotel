@@ -70,9 +70,10 @@ export default function Navbar() {
             ))}
             <Button
               size="lg"
+              asChild
               className="bg-primary text-white font-semibold px-6 py-2 rounded-full hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-md"
             >
-              Book Now
+              <Link href="/booking">Book Now</Link>
             </Button>
           </nav>
 
@@ -111,8 +112,9 @@ export default function Navbar() {
             <Button
               className="w-full bg-primary text-white font-semibold px-6 py-3 rounded-full hover:bg-primary/90 transition-all duration-300"
               size="lg"
+              asChild
             >
-              Book Now
+              <Link href="/booking">Book Now</Link>
             </Button>
           </div>
         </div>
