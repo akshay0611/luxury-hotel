@@ -4,7 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
 import { useToast } from '@/hooks/use-toast';
-import { submitNewsletterForm } from '@/utils/supabase/newsletter';
 import { cn } from "@/lib/utils"
 
 export default function Footer() {
@@ -109,7 +108,20 @@ export default function Footer() {
     setIsLoading(true);
 
     try {
-      await submitNewsletterForm({ email });
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
       toast({
         title: 'Subscription Successful',
         description: 'You have successfully subscribed to the newsletter!',
