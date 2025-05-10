@@ -56,14 +56,39 @@ export default function BookingConfirmContent() {
   }, [roomId, toast])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitted(true)
-    toast({
-      title: "Booking Confirmed!",
-      description: "Thank you for your reservation. We look forward to your stay!",
-      variant: "default",
-    })
-    setTimeout(() => router.push("/"), 3000)
+    e.preventDefault();
+    if (!room || !date?.from || !date?.to) return;
+
+    const res = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        room_id: room.id,
+        name,
+        email,
+        phone,
+        guests: guestCount,
+        date_from: date.from.toLocaleDateString("en-CA"),
+        date_to: date.to.toLocaleDateString("en-CA"),
+      }),
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      setSubmitted(true);
+      toast({
+        title: "Booking Confirmed!",
+        description: "Thank you for your reservation. We look forward to your stay!",
+        variant: "default",
+      });
+      setTimeout(() => router.push("/"), 3000);
+    } else {
+      toast({
+        title: "Booking Failed",
+        description: result.error || "Something went wrong.",
+        variant: "destructive",
+      });
+    }
   }
 
   if (loading) {
