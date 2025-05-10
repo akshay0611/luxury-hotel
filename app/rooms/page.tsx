@@ -162,7 +162,10 @@ export default function RoomsPage() {
                       asChild
                       className="bg-primary text-white font-semibold px-5 py-2 rounded-full hover:bg-primary/90 transition-all duration-300"
                     >
-                      <Link href={`/booking?room=${room.id}`}>Book Now</Link>
+                      <Link href={`/booking/confirm?room=${room.id}`}>
+  Book Now
+</Link>
+
                     </Button>
                   </div>
                 </div>
