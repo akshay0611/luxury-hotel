@@ -1,112 +1,69 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Star, Users, Wifi, Coffee, Tv, Bath } from "lucide-react"
+import { useState, useEffect } from "react"
+import { getRooms, type Room } from "@/utils/supabase/rooms"
+import { useToast } from "@/hooks/use-toast"
 
-const rooms = [
-  {
-    id: 1,
-    name: "Standard Room",
-    image: "/assets/room_1.jpeg",
-    tag: null,
-    rating: 4.5,
-    capacity: 2,
-    size: 28,
-    description: "Comfortable room with all essential amenities for a pleasant stay.",
-    price: 149,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-    ],
-  },
-  {
-    id: 2,
-    name: "Deluxe King Room",
-    image: "/assets/room_2.jpeg",
-    tag: "Popular",
-    rating: 4.8,
-    capacity: 2,
-    size: 35,
-    description: "Spacious room with king-sized bed, modern amenities, and city view.",
-    price: 199,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-      { name: "Bathtub", icon: <Bath className="h-3 w-3 mr-1" /> },
-    ],
-  },
-  {
-    id: 3,
-    name: "Premium Suite",
-    image: "/assets/room_3.jpeg",
-    tag: "Luxury",
-    rating: 4.9,
-    capacity: 3,
-    size: 55,
-    description: "Luxurious suite with separate living area and panoramic views.",
-    price: 349,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-      { name: "Bathtub", icon: <Bath className="h-3 w-3 mr-1" /> },
-    ],
-  },
-  {
-    id: 4,
-    name: "Family Room",
-    image: "/assets/room_4.jpeg",
-    tag: null,
-    rating: 4.7,
-    capacity: 4,
-    size: 45,
-    description: "Perfect for families with two queen beds and extra space.",
-    price: 279,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-    ],
-  },
-  {
-    id: 5,
-    name: "Executive Suite",
-    image: "/assets/room_5.jpeg",
-    tag: "Business",
-    rating: 4.8,
-    capacity: 2,
-    size: 50,
-    description: "Elegant suite with workspace and premium amenities for business travelers.",
-    price: 299,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-      { name: "Bathtub", icon: <Bath className="h-3 w-3 mr-1" /> },
-    ],
-  },
-  {
-    id: 6,
-    name: "Presidential Suite",
-    image: "/assets/room_6.jpeg",
-    tag: "Luxury",
-    rating: 5.0,
-    capacity: 4,
-    size: 90,
-    description: "Our most luxurious accommodation with exceptional amenities and service.",
-    price: 599,
-    amenities: [
-      { name: "Free WiFi", icon: <Wifi className="h-3 w-3 mr-1" /> },
-      { name: "TV", icon: <Tv className="h-3 w-3 mr-1" /> },
-      { name: "Coffee Maker", icon: <Coffee className="h-3 w-3 mr-1" /> },
-      { name: "Bathtub", icon: <Bath className="h-3 w-3 mr-1" /> },
-    ],
-  },
-]
+// Map of icon names to components
+const iconMap = {
+  Wifi: Wifi,
+  Coffee: Coffee,
+  Tv: Tv,
+  Bath: Bath,
+};
 
 export default function RoomsPage() {
+  const [activeFilter, setActiveFilter] = useState("All Rooms");
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchRooms() {
+      try {
+        const roomsData = await getRooms();
+        setRooms(roomsData);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load rooms. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchRooms();
+  }, [toast]);
+
+  const filteredRooms = rooms.filter((room) => {
+    switch (activeFilter) {
+      case "Standard Rooms":
+        return room.name.toLowerCase().includes("standard");
+      case "Deluxe Rooms":
+        return room.name.toLowerCase().includes("deluxe");
+      case "Suites":
+        return room.name.toLowerCase().includes("suite");
+      case "Family Rooms":
+        return room.name.toLowerCase().includes("family");
+      default:
+        return true;
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Header */}
@@ -130,9 +87,14 @@ export default function RoomsPage() {
             {["All Rooms", "Standard Rooms", "Deluxe Rooms", "Suites", "Family Rooms"].map((filter, index) => (
               <Button
                 key={index}
-                variant="outline"
-                className="rounded-full px-6 py-2 text-base font-semibold border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 animate-fade-in-up"
+                variant={activeFilter === filter ? "default" : "outline"}
+                className={`rounded-full px-6 py-2 text-base font-semibold transition-all duration-300 animate-fade-in-up ${
+                  activeFilter === filter 
+                    ? "bg-primary text-white" 
+                    : "border-primary text-primary hover:bg-primary hover:text-white"
+                }`}
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => setActiveFilter(filter)}
               >
                 {filter}
               </Button>
@@ -145,7 +107,7 @@ export default function RoomsPage() {
       <section className="py-16 md:py-24 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {rooms.map((room, index) => (
+            {filteredRooms.map((room, index) => (
               <div
                 key={room.id}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 hover:-translate-y-2 animate-fade-in-up"
@@ -181,12 +143,15 @@ export default function RoomsPage() {
                   </div>
                   <p className="text-gray-600 mb-6 text-base leading-relaxed">{room.description}</p>
                   <div className="flex flex-wrap gap-4 mb-6">
-                    {room.amenities.map((amenity, idx) => (
-                      <div key={idx} className="flex items-center text-sm text-gray-600">
-                        {amenity.icon}
-                        <span className="ml-1">{amenity.name}</span>
-                      </div>
-                    ))}
+                    {room.amenities.map((amenity, idx) => {
+                      const IconComponent = iconMap[amenity.icon as keyof typeof iconMap];
+                      return (
+                        <div key={idx} className="flex items-center text-sm text-gray-600">
+                          {IconComponent && <IconComponent className="h-3 w-3 mr-1" />}
+                          <span className="ml-1">{amenity.name}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-gray-900">
@@ -236,5 +201,5 @@ export default function RoomsPage() {
         </div>
       </section>
     </>
-  )
+  );
 }
