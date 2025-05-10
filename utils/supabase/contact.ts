@@ -1,6 +1,4 @@
 // utils/supabase/contact.ts
-import { supabase } from "./client";
-
 export type ContactFormData = {
   name: string;
   email: string;
@@ -10,18 +8,18 @@ export type ContactFormData = {
 };
 
 export async function submitContactForm(formData: ContactFormData) {
-  const { data, error } = await supabase.from("contact_messages").insert([
-    {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      subject: formData.subject,
-      message: formData.message,
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  ]);
+    body: JSON.stringify(formData),
+  });
 
-  if (error) {
-    throw new Error("Failed to send your message. Please try again.");
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to send your message. Please try again.');
   }
 
   return data;
